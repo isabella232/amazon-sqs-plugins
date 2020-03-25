@@ -1,0 +1,92 @@
+{
+  "name": "Test_SQS_Source",
+  "description": "Data Streams Application",
+  "artifact": {
+    "name": "cdap-data-streams",
+    "version": "6.1.1",
+    "scope": "SYSTEM",
+    "label": "Data Pipeline - Realtime"
+  },
+  "description": "",
+  "name": "",
+  "config": {
+    "resources": {
+      "memoryMB": 2048,
+      "virtualCores": 1
+    },
+    "driverResources": {
+      "memoryMB": 2048,
+      "virtualCores": 1
+    },
+    "connections": [
+      {
+        "from": "Amazon SQS",
+        "to": "File"
+      }
+    ],
+    "comments": [],
+    "postActions": [],
+    "properties": {
+      "system.spark.spark.streaming.backpressure.enabled": "true"
+    },
+    "processTimingEnabled": true,
+    "stageLoggingEnabled": false,
+    "stages": [
+      {
+        "name": "Amazon SQS",
+        "plugin": {
+          "name": "sqs",
+          "type": "streamingsource",
+          "label": "Amazon SQS",
+          "artifact": {
+            "name": "amazon-sqs-plugins",
+            "version": "1.0.0-SNAPSHOT",
+            "scope": "USER"
+          },
+          "properties": {
+            "region": "${AWS_REGION}",
+            "authenticationMethod": "Access Credentials",
+            "delete": "true",
+            "interval": "${POLL_INTERVAL}",
+            "waitTime": "${WAIT_TIME}",
+            "numberOfMessages": "${MAX_MESSAGES}",
+            "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"message\",\"type\":\"string\"}]}",
+            "referenceName": "ref1",
+            "queueName": "${QUEUE_NAME}",
+            "sqsEndpoint": "${SQS_ENDPOINT}",
+            "accessID": "${AWS_ACCESS_ID}",
+            "accessKey": "${AWS_ACCESS_SECRET}",
+            "format": "csv"
+          }
+        }
+      },
+      {
+        "name": "File",
+        "plugin": {
+          "name": "File",
+          "type": "batchsink",
+          "label": "File",
+          "artifact": {
+            "name": "core-plugins",
+            "version": "2.3.4",
+            "scope": "SYSTEM"
+          },
+          "properties": {
+            "suffix": "${OUTPUT_PATH_SUFFIX}",
+            "format": "json",
+            "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"message\",\"type\":\"string\"}]}",
+            "path": "${OUTPUT_FILE_PATH}",
+            "referenceName": "ref2"
+          }
+        }
+      }
+    ],
+    "batchInterval": "10s",
+    "clientResources": {
+      "memoryMB": 2048,
+      "virtualCores": 1
+    },
+    "disableCheckpoints": true,
+    "stopGracefully": true
+  }
+}

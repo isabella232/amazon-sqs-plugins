@@ -1,0 +1,108 @@
+{
+  "name": "Test_SQS_Sink",
+  "description": "Data Pipeline Application",
+  "artifact": {
+    "name": "cdap-data-pipeline",
+    "version": "6.1.1",
+    "scope": "SYSTEM"
+  },
+  "config": {
+    "resources": {
+      "memoryMB": 2048,
+      "virtualCores": 1
+    },
+    "driverResources": {
+      "memoryMB": 2048,
+      "virtualCores": 1
+    },
+    "connections": [
+      {
+        "from": "File",
+        "to": "Wrangler"
+      },
+      {
+        "from": "Wrangler",
+        "to": "Amazon SQS"
+      }
+    ],
+    "comments": [],
+    "postActions": [],
+    "properties": {},
+    "processTimingEnabled": true,
+    "stageLoggingEnabled": true,
+    "stages": [
+      {
+        "name": "File",
+        "plugin": {
+          "name": "File",
+          "type": "batchsource",
+          "label": "File",
+          "artifact": {
+            "name": "core-plugins",
+            "version": "2.3.4",
+            "scope": "SYSTEM"
+          },
+          "properties": {
+            "format": "text",
+            "filenameOnly": "false",
+            "recursive": "false",
+            "ignoreNonExistingFolders": "false",
+            "copyHeader": "false",
+            "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"body\",\"type\":\"string\"}]}",
+            "path": "${INPUT_FILE_PATH}",
+            "referenceName": "ref1"
+          }
+        }
+      },
+      {
+        "name": "Wrangler",
+        "plugin": {
+          "name": "Wrangler",
+          "type": "transform",
+          "label": "Wrangler",
+          "artifact": {
+            "name": "wrangler-transform",
+            "version": "4.1.4",
+            "scope": "SYSTEM"
+          },
+          "properties": {
+            "workspaceId": "8e38c5b2-2c31-43b5-a8da-cce35c996c0b",
+            "directives": "parse-as-csv :body ',' false",
+            "schema": "{\"name\":\"avroSchema\",\"type\":\"record\",\"fields\":[{\"name\":\"body\",\"type\":[\"string\",\"null\"]},{\"name\":\"body_1\",\"type\":[\"string\",\"null\"]},{\"name\":\"body_2\",\"type\":[\"string\",\"null\"]},{\"name\":\"body_3\",\"type\":[\"string\",\"null\"]}]}",
+            "field": "body",
+            "precondition": "false",
+            "threshold": "1"
+          }
+        }
+      },
+      {
+        "name": "Amazon SQS",
+        "plugin": {
+          "name": "sqs",
+          "type": "batchsink",
+          "label": "Amazon SQS",
+          "artifact": {
+            "name": "amazon-sqs-plugins",
+            "version": "1.0.0-SNAPSHOT",
+            "scope": "USER"
+          },
+          "properties": {
+            "region": "${AWS_REGION}",
+            "authenticationMethod": "Access Credentials",
+            "messageFormat": "${MESSAGE_FORMAT}",
+            "delaySeconds": "${DELAY}",
+            "referenceName": "ref2",
+            "accessID": "${AWS_ACCESS_ID}",
+            "accessKey": "${AWS_ACCESS_SECRET}",
+            "sqsEndpoint": "${SQS_ENDPOINT}",
+            "queueName": "${QUEUE_NAME}"
+          }
+        }
+      }
+    ],
+    "schedule": "0 * * * *",
+    "engine": "spark",
+    "numOfRecordsPreview": 100,
+    "maxConcurrentRuns": 1
+  }
+}

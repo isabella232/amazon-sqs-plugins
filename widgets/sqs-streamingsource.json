@@ -1,0 +1,195 @@
+{
+  "metadata": {
+    "spec-version": "1.0"
+  },
+  "display-name": "Amazon SQS",
+  "configuration-groups": [
+    {
+      "label": "Basic",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName",
+          "widget-attributes": {
+            "placeholder": "Name used to identify this source for lineage"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Amazon Region",
+          "name": "region",
+          "widget-attributes": {
+            "values": [
+              "us-gov-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-central-1",
+              "ap-south-1",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "sa-east-1",
+              "cn-north-1",
+              "ca-central-1"
+            ],
+            "default": "us-west-1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Queue Name",
+          "name": "queueName",
+          "widget-attributes": {
+            "placeholder": "The queue name to read from"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "SQS Endpoint",
+          "name": "sqsEndpoint",
+          "widget-attributes" : {
+            "placeholder": "Endpoint of the SQS server to connect to."
+          }
+        }
+      ]
+    },
+    {
+      "label": "Credentials",
+      "properties": [
+        {
+          "widget-type": "radio-group",
+          "label": "Authentication Method",
+          "name": "authenticationMethod",
+          "widget-attributes": {
+            "layout": "inline",
+            "default": "Access Credentials",
+            "options": [
+              {
+                "id": "Access Credentials",
+                "label": "Access Credentials"
+              },
+              {
+                "id": "IAM",
+                "label": "IAM"
+              }
+            ]
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Access ID",
+          "name": "accessID",
+          "widget-attributes": {
+            "placeholder": "Amazon Access ID"
+          }
+        },
+        {
+          "widget-type": "password",
+          "label": "Access Key",
+          "name": "accessKey",
+          "widget-attributes": {
+            "placeholder": "Amazon Access Key"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Advanced",
+      "properties": [
+        {
+          "widget-type": "toggle",
+          "name": "delete",
+          "label": "Delete messages after read?",
+          "widget-attributes": {
+            "default": "true",
+            "on": {
+              "value": "true",
+              "label": "Yes"
+            },
+            "off": {
+              "value": "false",
+              "label": "No"
+            }
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Format",
+          "name": "format",
+          "widget-attributes": {
+            "values": [
+              "avro",
+              "binary",
+              "bytes",
+              "clf",
+              "csv",
+              "grok",
+              "syslog",
+              "text",
+              "tsv"
+            ],
+            "default": "bytes"
+          }
+        },
+        {
+          "widget-type": "number",
+          "label": "Interval (in seconds)",
+          "name": "interval",
+          "widget-attributes" : {
+            "default": "0",
+            "min": "0",
+            "placeholder": "The amount of time to wait between each poll in seconds."
+          }
+        },
+        {
+          "widget-type": "number",
+          "label": "Wait Time (in seconds)",
+          "name": "waitTime",
+          "widget-attributes" : {
+            "default": "10",
+            "min": "0",
+            "max": "20",
+            "placeholder": "The duration (in seconds) for which the call waits for a message to arrive in the queue before returning."
+          }
+        },
+        {
+          "widget-type": "number",
+          "label": "Number of messages to return",
+          "name": "numberOfMessages",
+          "widget-attributes" : {
+            "default": "10",
+            "min": "1",
+            "max": "10",
+            "placeholder": "The maximum number of messages to return."
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "schema",
+      "widget-type": "schema",
+      "widget-attributes": {
+        "default-schema": {
+          "name": "etlSchemaBody",
+          "type": "record",
+          "fields": [
+            {
+              "name": "message",
+              "type": "string"
+            }
+          ]
+        },
+        "schema-default-type": "string",
+        "property-watch": "format"
+      }
+    }
+  ]
+}
