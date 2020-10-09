@@ -109,7 +109,8 @@ public class SqsSinkConfigTest {
     MockFailureCollector collector = new MockFailureCollector();
     Assert.assertNull(config.getMessageFormat(collector));
     Assert.assertEquals(1, collector.getValidationFailures().size());
-    Assert.assertEquals(SqsSinkConstants.PROPERTY_MESSAGE_FORMAT, collector.getValidationFailures().get(0).getCauses().get(0)
+    Assert.assertEquals(SqsSinkConstants.PROPERTY_MESSAGE_FORMAT, 
+                        collector.getValidationFailures().get(0).getCauses().get(0)
       .getAttribute(CauseAttributes.STAGE_CONFIG));
   }
 
